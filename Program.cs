@@ -2,10 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Spyder
@@ -19,74 +17,70 @@ namespace Spyder
 
         async static Task MainAsync(string[] args)
         {
-            HttpClient client = new HttpClient();
+            string url = string.Empty;
+            //HttpClient client = new HttpClient();
+            List<string> words = Words.GetAll();        // native speaker knows 20,000 words actively, 40,000 words passively
 
-            // begining, check how many words a person knows
-            string targetWord = "z"; // a to z & a words to z words (commonly used, 100 each?)
-            string targetPage = "1"; // max 100 if the usage example has over 1980 entries
+            for (int i = 0; i < words.Count; i++)
+            {
+                string targetWord = words[i];       // a to z & a words to z words (commonly used)
+                string initialPage = "1";        // max 100 if example count is larger than 1980
 
-            // should be in a loop
-            HttpResponseMessage response = await client.GetAsync($"https://endic.naver.com/search_example.nhn?sLn=en&examType=example&query={targetWord}&pageNo={targetPage}&ui=lite");
-            string contents = await response.Content.ReadAsStringAsync();
+                url = UrlHelper.GetUrl(targetWord, initialPage);
+                HtmlDocument document = await HtmlHelper.LoadSiteAsync(url);
+
+                int exampleCount = PageHelper.GetExampleCount(document);
+                int pageCount = PageHelper.GetPageCount(exampleCount);
+
+                Word word = new Word
+                {
+                    Index = i + 1,
+                    Url = url,
+                    Phrase = targetWord,
+                    PageCount = pageCount,
+                    ExampleCount = exampleCount,
+                    EstimatedCount = pageCount * 20     // 20 = max words per page
+                };
+                using (StreamWriter logWriter = File.AppendText("log.txt"))
+                {
+                    // write into an excel file if possible
+                    string wordInfo = $"[Access Time: {DateTime.UtcNow}][Index: {word.Index}], [Word: {word.Phrase}], [Usage Examples: {word.ExampleCount}], " +
+                        $"[Pages Visited: {word.PageCount}], [Collected (est.): {word.EstimatedCount}], [Link: {word.Url}]";
+
+                    logWriter.WriteLine(wordInfo);
+                }
+
+                using (TextWriter writer = new StreamWriter($"words/{word.Phrase}.txt"))
+                {
+                    for (int j = 1; j < pageCount + 1; j++)
+                    {
+                        url = UrlHelper.GetUrl(targetWord, j.ToString());
+                        document = await HtmlHelper.LoadSiteAsync(url);
+
+                        Dictionary<string, string> sentences = PageHelper.GetSentences(document);
+
+                        if (sentences != null)
+                        {
+                            foreach (KeyValuePair<string, string> kvp in sentences)
+                            {
+                                Console.WriteLine($"{kvp.Key}\t\t{kvp.Value}");
+                                writer.WriteLine($"{kvp.Key}\t\t{kvp.Value}");
+                            }
+                        }
+                    }
+                }
+            }
+
 
             // write to two files one for word and count, how many exist, how many read since its maxed
 
-            HtmlDocument document = new HtmlDocument();
-            document.LoadHtml(contents);
-
-            string egCount = document.DocumentNode.SelectSingleNode("(//div[contains(@class, 'word_num_nobor')]//span[contains(@class, 'fnt_k03')])[1]").InnerText;
-            //HtmlNode[] nodes = pageDocument.DocumentNode.SelectNodes("(//ul[contains(@class, 'list_a list_a_mar')]//input[contains(@type, 'hidden')])").ToArray();
-
-            //foreach (HtmlNode node in nodes)
+            //TextWriter tw = new StreamWriter("saveList.txt");
+            //foreach (string s in newLines)
             //{
-            //    string targetText = node.GetAttributeValue("value", "");
-            //    Console.WriteLine(targetText);
+            //    tw.WriteLine(s);
             //}
-
-            // max page will be 100
-            // max 20 entries per page
-            // a to z then commonly used words a from z 
-
-
-            //using (MemoryStream memoryStream = new MemoryStream(targetText.))
-            //using (FileStream fileStream = new FileStream("b2.txt", FileMode.Create, FileAccess.Write))
-            //{
-            //    memoryStream.CopyTo(fileStream);
-            //}
-            egCount = Regex.Replace(egCount, "[^.0-9]", "");
-            int pageCount = (int.Parse(egCount) / 20);
-            if (pageCount > 100)
-            {
-                pageCount = 100;
-            }
-
-
-
-            string[] lines = File.ReadAllLines("words.txt");
-            List<string> newLines = new List<string>();
-
-            int maxLines = lines.Length / 30;
-
-            for (int i = 0; i < maxLines; i++)
-            {
-                StringBuilder builder = new StringBuilder();
-                for (int j = 0; j < 30; j++)
-                {
-                    string word = $"\"{lines[j + i * 30]}\", ";
-                    builder.Append(word);
-                }
-                //builder.AppendLine();
-
-                newLines.Add(builder.ToString());
-            }
-
-
-            TextWriter tw = new StreamWriter("saveList.txt");
-            foreach(string s in newLines)
-            {
-                tw.WriteLine(s);
-            }
-            tw.Close();
+            //tw.Close();
+            Console.WriteLine("Process Done.");
             Console.ReadLine();
         }
     }
