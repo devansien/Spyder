@@ -54,8 +54,7 @@ namespace Spyder
                     string koreanSentence = koreanNodes[i].InnerText;
                     string englishSentence = englishNodes[i].GetAttributeValue("value", "");
 
-                    //koreanSentence = Regex.Replace(koreanSentence, @"[^0-9a-zA-Z]+", "");
-                    //englishSentence = Regex.Replace(englishSentence, @"[^0-9a-zA-Z]+", "");
+               
                     englishSentence = Regex.Replace(englishSentence, @"\[[^\[\]]+\]", "");
                     englishSentence = Regex.Replace(englishSentence, @"\([^\[\]]+\)", "");
                     englishSentence = englishSentence.Replace("&quot;", "");
@@ -66,15 +65,15 @@ namespace Spyder
                     int index = englishSentence.IndexOf("=");
                     if (index > 0)
                         englishSentence = englishSentence.Substring(0, index);
-
-
-                    englishSentence = Regex.Replace(englishSentence, @"[^\w\s]", "");
-                    koreanSentence = Regex.Replace(koreanSentence, @"[^\w\s]", "");
-
-                    koreanSentence = Regex.Replace(koreanSentence, @"\([^\[\]]+\)", "");
+                    koreanSentence = Regex.Replace(koreanSentence, @" ?\(.*?\)", "");
                     koreanSentence = Regex.Replace(koreanSentence, @"\<[^\[\]]+\>", "");
                     koreanSentence = Regex.Replace(koreanSentence, @"\[[^\[\]]+\]", "");
                     koreanSentence = Regex.Replace(koreanSentence, @"\[[^\[\]]+\〕", "");
+
+                    englishSentence = Regex.Replace(englishSentence, @"[^\w\s,?!]", "");
+                    koreanSentence = Regex.Replace(koreanSentence, @"[^\w\s,?!]", "");
+
+                 
 
                     int kindex = koreanSentence.IndexOf("=");
                     if (kindex > 0)

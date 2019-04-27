@@ -23,50 +23,69 @@ namespace Spyder
 
             for (int i = 0; i < words.Count; i++)
             {
-                string targetWord = words[i];       // a to z & a words to z words (commonly used)
-                string initialPage = "1";        // max 100 if example count is larger than 1980
-
-                url = UrlHelper.GetUrl(targetWord, initialPage);
-                HtmlDocument document = await HtmlHelper.LoadSiteAsync(url);
-
-                int exampleCount = PageHelper.GetExampleCount(document);
-                int pageCount = PageHelper.GetPageCount(exampleCount);
-
-                Word word = new Word
+                if (!File.Exists($"sentences/{words[i]}.txt"))
                 {
-                    Index = i + 1,
-                    Url = url,
-                    Phrase = targetWord,
-                    PageCount = pageCount,
-                    ExampleCount = exampleCount,
-                    EstimatedCount = pageCount * 20     // 20 = max words per page
-                };
-                using (StreamWriter logWriter = File.AppendText("log.txt"))
-                {
-                    // write into an excel file if possible
-                    string wordInfo = $"[Access Time: {DateTime.UtcNow}][Index: {word.Index}], [Word: {word.Phrase}], [Usage Examples: {word.ExampleCount}], " +
-                        $"[Pages Visited: {word.PageCount}], [Collected (est.): {word.EstimatedCount}], [Link: {word.Url}]";
+                    string targetWord = words[i];       // a to z & a words to z words (commonly used)
+                    string initialPage = "1";        // max 100 if example count is larger than 1980
 
-                    logWriter.WriteLine(wordInfo);
-                }
+                    url = UrlHelper.GetUrl(targetWord, initialPage);
+                    HtmlDocument document = await HtmlHelper.LoadSiteAsync(url);
 
-                using (TextWriter writer = new StreamWriter($"words/{word.Phrase}.txt"))
-                {
-                    for (int j = 1; j < pageCount + 1; j++)
+                    if (document != null)
                     {
-                        url = UrlHelper.GetUrl(targetWord, j.ToString());
-                        document = await HtmlHelper.LoadSiteAsync(url);
+                        int exampleCount = PageHelper.GetExampleCount(document);
+                        int pageCount = PageHelper.GetPageCount(exampleCount);
 
-                        Dictionary<string, string> sentences = PageHelper.GetSentences(document);
-
-                        if (sentences != null)
+                        Word word = new Word
                         {
-                            foreach (KeyValuePair<string, string> kvp in sentences)
+                            Index = i + 1,
+                            Url = url,
+                            Phrase = targetWord,
+                            PageCount = pageCount,
+                            ExampleCount = exampleCount,
+                            EstimatedCount = pageCount * 20     // 20 = max words per page
+                        };
+                        using (StreamWriter logWriter = File.AppendText("log.txt"))
+                        {
+                            // write into an excel file if possible
+                            string wordInfo = $"[Index: {word.Index}], [Access Time: {DateTime.UtcNow}], ";
+
+                            logWriter.Write(wordInfo);
+                        }
+
+                        int collectCount = 0;
+                        int actPageCount = 0;
+                        // if file exist go for next should be implemented
+                        using (TextWriter writer = new StreamWriter($"sentences/{word.Phrase}.txt"))
+                        {
+                            for (int j = 1; j < pageCount + 1; j++)
                             {
-                                Console.WriteLine($"{kvp.Key}\t\t{kvp.Value}");
-                                writer.WriteLine($"{kvp.Key}\t\t{kvp.Value}");
+                                url = UrlHelper.GetUrl(targetWord, j.ToString());
+                                document = await HtmlHelper.LoadSiteAsync(url);
+
+                                Dictionary<string, string> sentences = PageHelper.GetSentences(document);
+
+                                actPageCount++;
+                                if (sentences != null)
+                                {
+                                    foreach (KeyValuePair<string, string> kvp in sentences)
+                                    {
+                                        collectCount++;
+                                        Console.WriteLine($"{kvp.Key}\t\t{kvp.Value}");
+                                        writer.WriteLine($"{kvp.Key}\t\t{kvp.Value}");
+                                    }
+                                }
                             }
                         }
+
+                        using (StreamWriter logWriter = File.AppendText("log.txt"))
+                        {
+                            // write into an excel file if possible
+                            string wordInfo = $"[Complete Time: {DateTime.UtcNow}], [Word: {word.Phrase}], [Usage Examples: {word.ExampleCount}], [Pages Visited: {actPageCount}], [Sentences Collected: {collectCount}], [Link: {word.Url}]";
+
+                            logWriter.WriteLine(wordInfo);
+                        }
+
                     }
                 }
             }
