@@ -9,6 +9,7 @@ namespace Spyder
     {
         private const int MaxWordsPerPage = 20;
         private const int MaxPagesPerWord = 100;
+        private const string pattern = @"&quot;|&amp;|\[(.*?)\]|\((.*?)\)|\<(.*?)\>|\((.*?)\)|\[(.*?)\〕|[^\w\s,'?!=]";
 
         public static int GetExampleCount(HtmlDocument document)
         {
@@ -54,37 +55,24 @@ namespace Spyder
                     string koreanSentence = koreanNodes[i].InnerText;
                     string englishSentence = englishNodes[i].GetAttributeValue("value", "");
 
-               
-                    englishSentence = Regex.Replace(englishSentence, @"\[[^\[\]]+\]", "");
-                    englishSentence = Regex.Replace(englishSentence, @"\([^\[\]]+\)", "");
-                    englishSentence = englishSentence.Replace("&quot;", "");
-                    englishSentence = englishSentence.Replace("&amp;", "");
-                    koreanSentence = koreanSentence.Replace("&quot;", "");
-                    koreanSentence = koreanSentence.Replace("&amp;", "");
+                    englishSentence = englishSentence.ToLower();
+
 
                     int index = englishSentence.IndexOf("=");
                     if (index > 0)
                         englishSentence = englishSentence.Substring(0, index);
-                    koreanSentence = Regex.Replace(koreanSentence, @" ?\(.*?\)", "");
-                    koreanSentence = Regex.Replace(koreanSentence, @"\<[^\[\]]+\>", "");
-                    koreanSentence = Regex.Replace(koreanSentence, @"\[[^\[\]]+\]", "");
-                    koreanSentence = Regex.Replace(koreanSentence, @"\[[^\[\]]+\〕", "");
-
-                    englishSentence = Regex.Replace(englishSentence, @"[^\w\s,?!]", "");
-                    koreanSentence = Regex.Replace(koreanSentence, @"[^\w\s,?!]", "");
-
-                 
 
                     int kindex = koreanSentence.IndexOf("=");
                     if (kindex > 0)
                         koreanSentence = koreanSentence.Substring(0, kindex);
 
-                    englishSentence.ToLower();
+                    englishSentence = Regex.Replace(englishSentence, pattern, string.Empty);
+                    koreanSentence = Regex.Replace(koreanSentence, pattern, string.Empty);
 
-                    if (!sentences.ContainsKey(englishSentence))
-                    {
-                        sentences.Add(englishSentence, koreanSentence);
-                    }
+
+
+                    if (!sentences.ContainsKey(englishSentence))                
+                        sentences.Add(englishSentence, koreanSentence);                  
                 }
 
                 return sentences;

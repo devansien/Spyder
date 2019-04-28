@@ -17,6 +17,8 @@ namespace Spyder
 
         async static Task MainAsync(string[] args)
         {
+            //Console.OutputEncoding = System.Text.Encoding.UTF8;
+
             string url = string.Empty;
             //HttpClient client = new HttpClient();
             List<string> words = Words.GetAll();        // native speaker knows 20,000 words actively, 40,000 words passively
@@ -45,13 +47,17 @@ namespace Spyder
                             ExampleCount = exampleCount,
                             EstimatedCount = pageCount * 20     // 20 = max words per page
                         };
-                        using (StreamWriter logWriter = File.AppendText("log.txt"))
-                        {
-                            // write into an excel file if possible
-                            string wordInfo = $"[Index: {word.Index}], [Access Time: {DateTime.UtcNow}], ";
 
-                            logWriter.Write(wordInfo);
-                        }
+                        await Task.Run(() =>
+                        {
+                            using (StreamWriter logWriter = File.AppendText("log.txt"))
+                            {
+                                // write into an excel file if possible
+                                string wordInfo = $"[Index: {word.Index.ToString().PadLeft(4, '0')}], [Access Time: {DateTime.UtcNow.ToString("MM/dd/yyyy HH:mm:ss")}], ";
+
+                                logWriter.Write(wordInfo);
+                            }
+                        });
 
                         int collectCount = 0;
                         int actPageCount = 0;
@@ -77,14 +83,16 @@ namespace Spyder
                                 }
                             }
                         }
-
-                        using (StreamWriter logWriter = File.AppendText("log.txt"))
+                        await Task.Run(() =>
                         {
-                            // write into an excel file if possible
-                            string wordInfo = $"[Complete Time: {DateTime.UtcNow}], [Word: {word.Phrase}], [Usage Examples: {word.ExampleCount}], [Pages Visited: {actPageCount}], [Sentences Collected: {collectCount}], [Link: {word.Url}]";
+                            using (StreamWriter logWriter = File.AppendText("log.txt"))
+                            {
+                                // write into an excel file if possible
+                                string wordInfo = $"[Complete Time: {DateTime.UtcNow.ToString("MM/dd/yyyy HH:mm:ss")}], [Word: {word.Phrase}], [Usage Examples: {word.ExampleCount}], [Pages Visited: {actPageCount}], [Sentences Collected: {collectCount}], [Link: {word.Url}]";
 
-                            logWriter.WriteLine(wordInfo);
-                        }
+                                logWriter.WriteLine(wordInfo);
+                            }
+                        });
 
                     }
                 }
