@@ -10,7 +10,7 @@ This project consists of:
 ```
 
 ```
-    2. Log file will be written in the debug folder (if set to debug).
+    2. Log file will be generated in the debug folder (if set to debug).
 ```
 
 ```
