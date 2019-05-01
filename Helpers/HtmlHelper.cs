@@ -27,7 +27,7 @@ namespace Spyder
                 {
                     retryCount--;
 
-                    using (StreamWriter logWriter = File.AppendText("log.txt"))
+                    using (StreamWriter logWriter = File.AppendText("logs.txt"))
                     {
                         string errorInfo = $"Error: [{ex.InnerException}] @ [{url}], [{ex.StackTrace}]";
 

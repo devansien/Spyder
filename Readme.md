@@ -1,18 +1,18 @@
 # Spyder
 
 This project consists of:
-* Alexa media player skill template (audio & video)
+* A web crawler scarpes English & Korean sentence pairs from Naver's dictionary
 
-## Steps to configure Stream Cast:
-
-```
-    1. Sample step
-```
+## Description:
 
 ```
-    2. Sample step
+    1. 3000 most commonly used English words will be queried.
 ```
 
 ```
-    3. Sample step
+    2. Log file will be written in the debug folder (if set to debug).
+```
+
+```
+    3. About 1000 sentences collected from each words, some duplicated.
 ```

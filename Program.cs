@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Spyder
@@ -12,16 +10,14 @@ namespace Spyder
     {
         static void Main(string[] args)
         {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
             MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         async static Task MainAsync(string[] args)
         {
-            //Console.OutputEncoding = System.Text.Encoding.UTF8;
-
             string url = string.Empty;
-            //HttpClient client = new HttpClient();
-            List<string> words = Words.GetAll();        // native speaker knows 20,000 words actively, 40,000 words passively
+            List<string> words = Words.GetAll();
 
             for (int i = 0; i < words.Count; i++)
             {
@@ -50,17 +46,17 @@ namespace Spyder
 
                         await Task.Run(() =>
                         {
-                            using (StreamWriter logWriter = File.AppendText("log.txt"))
+                            using (StreamWriter logWriter = File.AppendText("logs.txt"))
                             {
                                 // write into an excel file if possible
                                 string wordInfo = $"[Index: {word.Index.ToString().PadLeft(4, '0')}], [Access Time: {DateTime.UtcNow.ToString("MM/dd/yyyy HH:mm:ss")}], ";
-
                                 logWriter.Write(wordInfo);
                             }
                         });
 
                         int collectCount = 0;
                         int actPageCount = 0;
+
                         // if file exist go for next should be implemented
                         using (TextWriter writer = new StreamWriter($"sentences/{word.Phrase}.txt"))
                         {
@@ -85,12 +81,13 @@ namespace Spyder
                         }
                         await Task.Run(() =>
                         {
-                            using (StreamWriter logWriter = File.AppendText("log.txt"))
+                            using (StreamWriter logWriter = File.AppendText("logs.txt"))
                             {
                                 // write into an excel file if possible
                                 string wordInfo = $"[Complete Time: {DateTime.UtcNow.ToString("MM/dd/yyyy HH:mm:ss")}], [Word: {word.Phrase}], [Usage Examples: {word.ExampleCount}], [Pages Visited: {actPageCount}], [Sentences Collected: {collectCount}], [Link: {word.Url}]";
 
                                 logWriter.WriteLine(wordInfo);
+                                logWriter.Close();
                             }
                         });
 
