@@ -16,6 +16,70 @@ namespace Spyder
 
         async static Task MainAsync(string[] args)
         {
+
+            //Console.WriteLine(DateTime.UtcNow);
+            //// finished scarping, now data clean up
+            //string[] filePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Sentences/");
+
+            //if (!File.Exists("corpus.ansien.en"))
+            //{
+            //    File.Create("corpus.ansien.en");
+            //    File.Create("corpus.ansien.ko");
+            //}
+
+            // StreamWriter engWriter = File.AppendText("corpus.ansien.en");
+            // StreamWriter korWriter = File.AppendText("corpus.ansien.ko");
+
+
+            // int c = 0;
+
+            // foreach (string filePath in filePaths)
+            // {
+            //     if (Path.GetExtension(filePath).Equals(".txt"))
+            //     {
+            //         foreach (string line in await File.ReadAllLinesAsync(filePath))
+            //         {
+            //             var tempLine = line.Split("\t");
+
+            //             if (tempLine.Length.Equals(1))
+            //             {
+
+            //                     await korWriter.WriteAsync(" " + tempLine[0].Trim());
+
+            //             }
+
+            //else
+            //             {
+
+
+            //                     await engWriter.WriteLineAsync(tempLine[0].Trim());
+
+            //                     await korWriter.WriteLineAsync(tempLine[2].Trim());
+
+            //             }
+
+            //         }
+            //     }
+            // }
+
+
+
+            //Console.WriteLine(DateTime.UtcNow);
+
+
+
+            //engWriter.Close();
+            //korWriter.Close();
+
+
+
+
+
+
+
+
+
+
             string url = string.Empty;
             List<string> words = Words.GetAll();
 

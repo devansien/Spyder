@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -50,35 +51,44 @@ namespace Spyder
 
             if (koreanNodeCollection != null && englishNodeCollection != null)
             {
-                for (int i = 0; i < koreanNodes.Length; i++)
+                if (koreanNodes.Count() == englishNodes.Count())
                 {
-                    string koreanSentence = koreanNodes[i].InnerText;
-                    string englishSentence = englishNodes[i].GetAttributeValue("value", "");
+                    for (int i = 0; i < koreanNodes.Length; i++)
+                    {
+                        string koreanSentence = koreanNodes[i].InnerText;
+                        string englishSentence = englishNodes[i].GetAttributeValue("value", "");
 
-                    englishSentence = englishSentence.ToLower();
+                        //englishSentence = englishSentence.ToLower();
+                        if (!string.IsNullOrWhiteSpace(koreanSentence))
+                        {
+
+                            int index = englishSentence.IndexOf("=");
+                            if (index > 0)
+                                englishSentence = englishSentence.Substring(0, index);
+
+                            int kindex = koreanSentence.IndexOf("=");
+                            if (kindex > 0)
+                                koreanSentence = koreanSentence.Substring(0, kindex);
+
+                            englishSentence = Regex.Replace(englishSentence, pattern, string.Empty);
+                            koreanSentence = Regex.Replace(koreanSentence, pattern, string.Empty);
 
 
-                    int index = englishSentence.IndexOf("=");
-                    if (index > 0)
-                        englishSentence = englishSentence.Substring(0, index);
 
-                    int kindex = koreanSentence.IndexOf("=");
-                    if (kindex > 0)
-                        koreanSentence = koreanSentence.Substring(0, kindex);
+                            if (!sentences.ContainsKey(englishSentence))
+                                sentences.Add(englishSentence, koreanSentence);
+                        }
+                    }
 
-                    englishSentence = Regex.Replace(englishSentence, pattern, string.Empty);
-                    koreanSentence = Regex.Replace(koreanSentence, pattern, string.Empty);
-
-
-
-                    if (!sentences.ContainsKey(englishSentence))                
-                        sentences.Add(englishSentence, koreanSentence);                  
+                    return sentences;
                 }
-
-                return sentences;
+                else
+                    return null;
             }
             else
+            {
                 return null;
+            }
 
         }
     }
