@@ -9,10 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="bin\Debug\netcoreapp2.2\logsb.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.4" />
   </ItemGroup>
 
@@ -25,11 +21,6 @@
   <ItemGroup>
     <Folder Include="bin\Debug\netcoreapp2.2\Sentences\Korean\" />
     <Folder Include="bin\Debug\netcoreapp2.2\Sentences\English\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="bin\Debug\netcoreapp2.2\corpus.ansien.en" />
-    <None Include="bin\Debug\netcoreapp2.2\corpus.ansien.ko" />
   </ItemGroup>
 
 </Project>

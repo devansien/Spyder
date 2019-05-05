@@ -28,22 +28,19 @@ namespace Spyder
             //    File.Create("corpus.ansien.ko");
             //}
 
-            StreamWriter engWriter = File.AppendText("corpus.ansien.en");
-            StreamWriter korWriter = File.AppendText("corpus.ansien.ko");
+            //StreamWriter engWriter = File.AppendText("corpus.ansien.en");
+            //StreamWriter korWriter = File.AppendText("corpus.ansien.ko");
 
 
             int engLineCount = 0;
             int korLineCount = 0;
 
 
-            for (int i = 0;  i<enFilePaths.Length; i++)
+            for (int i = 0; i < enFilePaths.Length; i++)
             {
                 if (Path.GetExtension(enFilePaths[i]).Equals(".txt"))
                 {
-                    //foreach (string line in await File.ReadAllLinesAsync(filePath))
-                    //{
-                    //    await engWriter.WriteLineAsync(line.Trim());
-                    //}
+
 
 
                     string[] engLines = await File.ReadAllLinesAsync(enFilePaths[i]);
@@ -53,10 +50,7 @@ namespace Spyder
 
                 if (Path.GetExtension(korFilePaths[i]).Equals(".txt"))
                 {
-                    //foreach (string line in await File.ReadAllLinesAsync(filePath))
-                    //{
-                    //    await korWriter.WriteLineAsync(line.Trim());
-                    //}
+
 
                     string[] korLines = await File.ReadAllLinesAsync(korFilePaths[i]);
                     korLineCount = korLines.Length;
@@ -74,8 +68,8 @@ namespace Spyder
 
 
 
-            engWriter.Close();
-            korWriter.Close();
+            //engWriter.Close();
+            //korWriter.Close();
 
 
 
