@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Spyder
@@ -17,64 +18,50 @@ namespace Spyder
         async static Task MainAsync(string[] args)
         {
 
-            Console.WriteLine(DateTime.UtcNow);
-            // finished scarping, now data clean up
-            string[] enFilePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Sentences/English");
+            Console.WriteLine($"Process start: {DateTime.UtcNow}");
+
+            string[] engFilePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Sentences/English");
             string[] korFilePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Sentences/Korean");
 
-            //if (!File.Exists("corpus.ansien.en"))
-            //{
-            //    File.Create("corpus.ansien.en");
-            //    File.Create("corpus.ansien.ko");
-            //}
+            Console.WriteLine($"Total English files: {engFilePaths.Length}");
+            Console.WriteLine($"Total Korean files: {korFilePaths.Length}");
 
-            //StreamWriter engWriter = File.AppendText("corpus.ansien.en");
-            //StreamWriter korWriter = File.AppendText("corpus.ansien.ko");
+            int fileCount = engFilePaths.Length == korFilePaths.Length ? engFilePaths.Length : 0;
+            int engTotalLineCount = 0;
+            int korTotalLineCount = 0;
 
+            StreamWriter engWriter = File.AppendText("corpus.ansien.eng");
+            StreamWriter korWriter = File.AppendText("corpus.ansien.kor");
 
-            int engLineCount = 0;
-            int korLineCount = 0;
-
-
-            for (int i = 0; i < enFilePaths.Length; i++)
+            for (int i = 0; i < fileCount; i++)
             {
-                if (Path.GetExtension(enFilePaths[i]).Equals(".txt"))
+                string[] engLines = File.ReadLines(engFilePaths[i]).ToArray();
+                string[] korLines = File.ReadLines(korFilePaths[i]).ToArray();
+
+                if (engLines.Length == korLines.Length)
                 {
+                    for (int j = 0; j < engLines.Length; j++)
+                    {
+                        if (!string.IsNullOrWhiteSpace(engLines[j]) && !string.IsNullOrWhiteSpace(korLines[j]))
+                        {
+                            await engWriter.WriteLineAsync(engLines[j]);
+                            await korWriter.WriteLineAsync(korLines[j]);
 
+                            engTotalLineCount++;
+                        }
 
-
-                    string[] engLines = await File.ReadAllLinesAsync(enFilePaths[i]);
-                    engLineCount = engLines.Length;
-
+                        korTotalLineCount++;
+                    }
                 }
-
-                if (Path.GetExtension(korFilePaths[i]).Equals(".txt"))
-                {
-
-
-                    string[] korLines = await File.ReadAllLinesAsync(korFilePaths[i]);
-                    korLineCount = korLines.Length;
-
-                }
-
-
-                if (engLineCount != korLineCount)
-                    Console.WriteLine($"{korFilePaths[i]}, el: {engLineCount}, kl: {korLineCount}");
+                else
+                    Console.WriteLine(engFilePaths[i]); // log if number of collected strings are not matching
             }
 
+            engWriter.Close();
+            korWriter.Close();
 
-
-            Console.WriteLine(DateTime.UtcNow);
-
-
-
-            //engWriter.Close();
-            //korWriter.Close();
-
-
-
-
-
+            Console.WriteLine($"Total English lines: {engTotalLineCount}");
+            Console.WriteLine($"Total Korean lines: {korTotalLineCount}");
 
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -187,7 +174,7 @@ namespace Spyder
             //    tw.WriteLine(s);
             //}
             //tw.Close();
-            Console.WriteLine("Process Done.");
+            Console.WriteLine($"Process Done: {DateTime.UtcNow}");
             Console.ReadLine();
         }
     }
