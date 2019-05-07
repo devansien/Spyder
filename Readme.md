@@ -1,7 +1,7 @@
 # Spyder
 
 This project consists of:
-* A web crawler scarpes English & Korean sentence pairs from Naver's dictionary
+* A web crawler scarpes English & Korean usage example sentence pairs from Naver.com.
 
 ## Description:
 
@@ -10,9 +10,14 @@ This project consists of:
 ```
 
 ```
-    2. Log file will be generated in the debug folder (if set to debug).
+    2. Log file will be generated in the debug folder (if the running mode is
+       set to debug).
 ```
 
 ```
-    3. About 1000 sentences collected from each words, some duplicated.
+    3. About 3 million sentences collected, including duplicates.
+```
+
+```
+    4. These corpora will be used as a training dataset for a translation model.
 ```
