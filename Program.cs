@@ -20,8 +20,11 @@ namespace Spyder
 
             Console.WriteLine($"Process start: {DateTime.UtcNow}");
 
-            string[] engFilePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Sentences/English");
-            string[] korFilePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Sentences/Korean");
+            //string[] engFilePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Sentences/English");
+            //string[] korFilePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Sentences/Korean");
+
+            string[] engFilePaths = new string[] { "corpus.ansien.eng" };
+            string[] korFilePaths = new string[] { "corpus.ansien.kor" };
 
             Console.WriteLine($"Total English files: {engFilePaths.Length}");
             Console.WriteLine($"Total Korean files: {korFilePaths.Length}");
@@ -30,8 +33,8 @@ namespace Spyder
             int engTotalLineCount = 0;
             int korTotalLineCount = 0;
 
-            StreamWriter engWriter = File.AppendText("corpus.ansien.eng");
-            StreamWriter korWriter = File.AppendText("corpus.ansien.kor");
+            StreamWriter engWriter = File.AppendText("Corpora/corpus.ansien.eng");
+            StreamWriter korWriter = File.AppendText("Corpora/corpus.ansien.kor");
 
             for (int i = 0; i < fileCount; i++)
             {
