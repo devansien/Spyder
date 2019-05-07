@@ -1,7 +1,8 @@
 # Spyder
 
 This project consists of:
-* A web crawler scarpes English & Korean usage example sentence pairs from Naver.com.
+* A web crawler scarpes English & Korean usage example sentence pairs from
+  Naver.com.
 
 ## Description:
 
