@@ -17,54 +17,11 @@ namespace Spyder
 
         async static Task MainAsync(string[] args)
         {
-
             Console.WriteLine($"Process start: {DateTime.UtcNow}");
 
-            //string[] engFilePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Sentences/English");
-            //string[] korFilePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Sentences/Korean");
-
-            string[] engFilePaths = new string[] { "corpus.ansien.eng" };
-            string[] korFilePaths = new string[] { "corpus.ansien.kor" };
-
-            Console.WriteLine($"Total English files: {engFilePaths.Length}");
-            Console.WriteLine($"Total Korean files: {korFilePaths.Length}");
-
-            int fileCount = engFilePaths.Length == korFilePaths.Length ? engFilePaths.Length : 0;
-            int engTotalLineCount = 0;
-            int korTotalLineCount = 0;
-
-            StreamWriter engWriter = File.AppendText("Corpora/corpus.ansien.eng");
-            StreamWriter korWriter = File.AppendText("Corpora/corpus.ansien.kor");
-
-            for (int i = 0; i < fileCount; i++)
-            {
-                string[] engLines = File.ReadLines(engFilePaths[i]).ToArray();
-                string[] korLines = File.ReadLines(korFilePaths[i]).ToArray();
-
-                if (engLines.Length == korLines.Length)
-                {
-                    for (int j = 0; j < engLines.Length; j++)
-                    {
-                        if (!string.IsNullOrWhiteSpace(engLines[j]) && !string.IsNullOrWhiteSpace(korLines[j]))
-                        {
-                            await engWriter.WriteLineAsync(engLines[j]);
-                            await korWriter.WriteLineAsync(korLines[j]);
-
-                            engTotalLineCount++;
-                        }
-
-                        korTotalLineCount++;
-                    }
-                }
-                else
-                    Console.WriteLine(engFilePaths[i]); // log if number of collected strings are not matching
-            }
-
-            engWriter.Close();
-            korWriter.Close();
-
-            Console.WriteLine($"Total English lines: {engTotalLineCount}");
-            Console.WriteLine($"Total Korean lines: {korTotalLineCount}");
+            //// gernerate corpus for training from collected text files
+            //IProcessor processor = new NaverProcessor();
+            //await processor.CreateCorpora();
 
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

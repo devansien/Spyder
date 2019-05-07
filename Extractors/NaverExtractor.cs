@@ -11,6 +11,11 @@ namespace Spyder
         private const int MaxPagesPerWord = 100;
 
 
+        public static string GetUrl(string word, string page)
+        {
+            return $"https://endic.naver.com/search_example.nhn?sLn=en&examType=example&query={word}&pageNo={page}&ui=lite";
+        }
+
         public static int GetExampleCount(HtmlDocument document)
         {
             string innerText = document.DocumentNode.SelectSingleNode(NaverNode.UsageExampleCount).InnerText;
@@ -78,11 +83,9 @@ namespace Spyder
 
                     return sentences;
                 }
-                else
-                    return null;
             }
-            else
-                return null;
+
+            return null;
         }
     }
 }
