@@ -12,7 +12,13 @@ namespace Spyder
         private const string korCorpus = "Corpora/corpus.ansien.kor";
         private const string engCorpus = "Corpora/corpus.ansien.eng";
 
-        public async Task CreateCorpora()
+
+        public async Task ProcessAsync()
+        {
+            await CreateCorporaAsync();
+        }
+
+        private async Task CreateCorporaAsync()
         {
             string[] korFilePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + korFolder);
             string[] engFilePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + engFolder);
@@ -23,7 +29,7 @@ namespace Spyder
             int totalLineCount = 0;
             int fileCount = GetFileCount(korFilePaths.Length, engFilePaths.Length);
 
-            await WriteToCorpus(fileCount, totalLineCount, korFilePaths, engFilePaths);
+            await WriteToCorpusAsync(fileCount, totalLineCount, korFilePaths, engFilePaths);
         }
 
         private int GetFileCount(int korFileCount, int engFileCount)
@@ -31,7 +37,7 @@ namespace Spyder
             return korFileCount == engFileCount ? korFileCount : 0;
         }
 
-        private async Task WriteToCorpus(int fileCount, int lineCount, string[] korPaths, string[] engPaths)
+        private async Task WriteToCorpusAsync(int fileCount, int lineCount, string[] korPaths, string[] engPaths)
         {
             StreamWriter korWriter = File.AppendText(korCorpus);
             StreamWriter engWriter = File.AppendText(engCorpus);

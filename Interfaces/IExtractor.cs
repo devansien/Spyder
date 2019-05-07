@@ -2,8 +2,8 @@
 
 namespace Spyder
 {
-    interface IProcessor
+    interface IExtractor
     {
-        Task ProcessAsync();
+        Task ExtractAsync();
     }
 }
