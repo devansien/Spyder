@@ -1,5 +1,7 @@
 ﻿using HtmlAgilityPack;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -17,90 +19,67 @@ namespace Spyder
             string url = string.Empty;
             List<string> words = Words.GetAll();
 
-            //for (int i = 0; i < words.Count; i++)
-            //{
-            //    if (!File.Exists($"sentences/english/eng_{words[i]}.txt"))
-            //    {
-            //        string targetWord = words[i];       // a to z & a words to z words (commonly used)
-            //        string initialPage = "1";        // max 100 if example count is larger than 1980
+            // should create senteces/english & sentences/korean paths
+            for (int i = 0; i < words.Count; i++)
+            {
+                if (!File.Exists($"sentences/english/eng_{words[i]}.txt"))
+                {
+                    string initialPage = "1";        // max 100 if example count is larger than 1980
+                    string targetWord = words[i];       // a to z (no i) & a words to z words (commonly used)
 
-            //        url = UrlHelper.GetUrl(targetWord, initialPage);
-            //        HtmlDocument document = await HtmlHelper.LoadSiteAsync(url);
+                    url = GetUrl(targetWord, initialPage);
+                    HtmlDocument document = await HtmlLoader.LoadSiteAsync(url);
+                    StreamWriter logWriter = File.AppendText("logs.txt");
 
-            //        if (document != null)
-            //        {
-            //            int exampleCount = PageHelper.GetExampleCount(document);
-            //            int pageCount = PageHelper.GetPageCount(exampleCount);
+                    if (document != null)
+                    {
+                        int exampleCount = GetExampleCount(document);
+                        int pageCount = GetPageCount(exampleCount);
 
-            //            Word word = new Word
-            //            {
-            //                Index = i + 1,
-            //                Url = url,
-            //                Phrase = targetWord,
-            //                PageCount = pageCount,
-            //                ExampleCount = exampleCount,
-            //                EstimatedCount = pageCount * 20     // 20 = max words per page
-            //            };
+                        string wordInfo = $"[Index: {(i + 1).ToString().PadLeft(4, '0')}], [Access Time: {DateTime.UtcNow.ToString("MM/dd/yyyy HH:mm:ss")}], ";
+                        await logWriter.WriteAsync(wordInfo);
 
-            //            using (StreamWriter logWriter = File.AppendText("logs.txt"))
-            //            {
-            //                string wordInfo = $"[Index: {word.Index.ToString().PadLeft(4, '0')}], [Access Time: {DateTime.UtcNow.ToString("MM/dd/yyyy HH:mm:ss")}], ";
-            //                await logWriter.WriteAsync(wordInfo);
-            //            }
+                        int collectCount = 0;
+                        int actualPageCount = 0;
 
+                        TextWriter korWriter = new StreamWriter($"sentences/korean/kor_{targetWord}.txt");
+                        TextWriter engWriter = new StreamWriter($"sentences/english/eng_{targetWord}.txt");
 
-            //            int collectCount = 0;
-            //            int actPageCount = 0;
+                        for (int j = 1; j < pageCount + 1; j++)
+                        {
+                            actualPageCount++;
+                            url = GetUrl(targetWord, j.ToString());
+                            document = await HtmlLoader.LoadSiteAsync(url);
+                            Dictionary<string, string> sentences = GetSentences(document);
 
-            //            TextWriter engWriter = new StreamWriter($"sentences/english/eng_{word.Phrase}.txt");
-            //            TextWriter korWriter = new StreamWriter($"sentences/korean/kor_{word.Phrase}.txt");
+                            if (sentences != null)
+                            {
+                                foreach (KeyValuePair<string, string> kvp in sentences)
+                                {
+                                    collectCount++;
+                                    engWriter.WriteLine($"{kvp.Key}");
+                                    korWriter.WriteLine($"{kvp.Value}");
+                                    Console.WriteLine($"{kvp.Key}\t\t{kvp.Value}");
+                                }
+                            }
+                        }
 
-            //            // if file exist go for next should be implemented
+                        await logWriter.WriteLineAsync($"[Complete Time: {DateTime.UtcNow.ToString("MM/dd/yyyy HH:mm:ss")}], [Word: {targetWord}], [Usage Examples: {exampleCount}], [Pages Visited: {actualPageCount}], [Sentences Collected: {collectCount}], [Link: {url}]");
 
-            //            for (int j = 1; j < pageCount + 1; j++)
-            //            {
-            //                url = UrlHelper.GetUrl(targetWord, j.ToString());
-            //                document = await HtmlHelper.LoadSiteAsync(url);
-
-            //                Dictionary<string, string> sentences = PageHelper.GetSentences(document);
-
-            //                actPageCount++;
-            //                if (sentences != null)
-            //                {
-            //                    foreach (KeyValuePair<string, string> kvp in sentences)
-            //                    {
-            //                        collectCount++;
-            //                        Console.WriteLine($"{kvp.Key}\t\t{kvp.Value}");
-            //                        engWriter.WriteLine($"{kvp.Key}");
-            //                        korWriter.WriteLine($"{kvp.Value}");
-            //                    }
-            //                }
-            //            }
-
-            //            // write into an excel file if possible
-
-            //            using (StreamWriter logWriter = File.AppendText("logs.txt"))
-            //            {
-            //                string wordInfo = $"[Complete Time: {DateTime.UtcNow.ToString("MM/dd/yyyy HH:mm:ss")}], [Word: {word.Phrase}], [Usage Examples: {word.ExampleCount}], [Pages Visited: {actPageCount}], [Sentences Collected: {collectCount}], [Link: {word.Url}]";
-
-            //                await logWriter.WriteLineAsync(wordInfo);
-            //            }
-
-
-            //            engWriter.Close();
-            //            korWriter.Close();
-            //        }
-            //    }
-            //}
-
+                        engWriter.Close();
+                        korWriter.Close();
+                        logWriter.Close();
+                    }
+                }
+            }
         }
 
-        public string GetUrl(string word, string page)
+        private string GetUrl(string word, string page)
         {
             return $"https://endic.naver.com/search_example.nhn?sLn=en&examType=example&query={word}&pageNo={page}&ui=lite";
         }
 
-        public int GetExampleCount(HtmlDocument document)
+        private int GetExampleCount(HtmlDocument document)
         {
             string innerText = document.DocumentNode.SelectSingleNode(NaverNode.UsageExampleCount).InnerText;
             innerText = Regex.Replace(innerText, "[^.0-9]", "");
@@ -112,7 +91,7 @@ namespace Spyder
             return exampleCount;
         }
 
-        public int GetPageCount(int exampleCount)
+        private int GetPageCount(int exampleCount)
         {
             int pageCount = exampleCount % MaxWordsPerPage == 0 ? exampleCount / MaxWordsPerPage : (exampleCount / MaxWordsPerPage) + 1;
 
@@ -122,7 +101,7 @@ namespace Spyder
             return pageCount;
         }
 
-        public Dictionary<string, string> GetSentences(HtmlDocument document)
+        private Dictionary<string, string> GetSentences(HtmlDocument document)
         {
 
             HtmlNodeCollection korCollection = document.DocumentNode.SelectNodes(NaverNode.KoreanSentence);

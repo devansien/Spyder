@@ -18,4 +18,9 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="bin\Debug\netcoreapp2.2\Sentences\English\" />
+    <Folder Include="bin\Debug\netcoreapp2.2\Sentences\Korean\" />
+  </ItemGroup>
+
 </Project>
