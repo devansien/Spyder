@@ -10,6 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="bin\Debug\netcoreapp2.2\corpus.ansien.eng" />
+    <None Include="bin\Debug\netcoreapp2.2\corpus.ansien.kor" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.4" />
   </ItemGroup>
 
