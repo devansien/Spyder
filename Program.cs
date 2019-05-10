@@ -23,16 +23,18 @@ namespace Spyder
         {
             Console.WriteLine($"Process start: {DateTime.UtcNow}");
 
-            //IExtractor extractor = new NaverExtractor();
-            //await extractor.ExtractAsync();
+            // 1. (write a text preproccess method to stringfy the word list)
 
-            // write a text preproccess method to stringfy the word list
+            // 2. extract usage examples
+            IExtractor extractor = new NaverExtractor();
+            await extractor.ExtractAsync();
 
-            //// gernerate corpora for training from collected text files
+            // 3. gernerate corpora for training from collected text files
             //IProcessor processor = new NaverProcessor();
             //await processor.ProcessAsync();
 
-            await MergeCorporaToText();
+            // 4. merge them into a single tsv file if needed
+            //await MergeCorporaToText();
 
             Console.WriteLine($"Process done: {DateTime.UtcNow}");
             Console.ReadLine();
