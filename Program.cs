@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace Spyder
@@ -24,6 +23,7 @@ namespace Spyder
             Console.WriteLine($"Process start: {DateTime.UtcNow}");
 
             // 1. (write a text preproccess method to stringfy the word list)
+            //
 
             // 2. extract usage examples
             IExtractor extractor = new NaverExtractor();
@@ -34,23 +34,19 @@ namespace Spyder
             //await processor.ProcessAsync();
 
             // 4. merge them into a single tsv file if needed
-            //await MergeCorporaToText();
+            //await DataBuilder.MergeCorporaToText();
+
+            // 5. split merged text to corpora again if needed
+            //await DataBuilder.SplitTextToCorpora();
+
+            // 6. make a validation set
+            //await DataBuilder.MakeValidationSet();
+
+            // 7. make open nmt compatible dataset
+            //await DataBuilder.MakeOpenNmtDataset();
 
             Console.WriteLine($"Process done: {DateTime.UtcNow}");
             Console.ReadLine();
-        }
-
-        async static Task MergeCorporaToText()
-        {
-            string[] engLines = await File.ReadAllLinesAsync("corpus.ansien.eng");
-            string[] korLines = await File.ReadAllLinesAsync("corpus.ansien.kor");
-
-            StreamWriter enko = File.AppendText("enko.txt");
-
-            for (int i = 0; i < engLines.Length; i++)
-                await enko.WriteLineAsync($"{engLines[i]}\t{korLines[i]}");
-
-            enko.Close();
         }
     }
 }
