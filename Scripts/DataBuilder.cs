@@ -43,7 +43,7 @@ namespace Spyder
             korWriter.Close();
         }
 
-        async static Task MakeValidationSet()
+        public async static Task MakeValidationSet()
         {
             int maxLineNum = 3000;
             string[] textLines = await File.ReadAllLinesAsync("engkor.txt");
