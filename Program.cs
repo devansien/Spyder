@@ -26,8 +26,8 @@ namespace Spyder
             //
 
             // 2. extract usage examples
-            IExtractor extractor = new NaverExtractor();
-            await extractor.ExtractAsync();
+            //IExtractor extractor = new NaverExtractor();
+            //await extractor.ExtractAsync();
 
             // 3. gernerate corpora for training from collected text files
             //IProcessor processor = new NaverProcessor();
@@ -42,8 +42,8 @@ namespace Spyder
             // 6. make a validation set
             //await DataBuilder.MakeValidationSet();
 
-            // 7. make open nmt compatible dataset
-            //await DataBuilder.MakeOpenNmtDataset();
+            // 7.make open nmt compatible dataset
+            await DataBuilder.MakeOpenNmtDataset();
 
             Console.WriteLine($"Process done: {DateTime.UtcNow}");
             Console.ReadLine();

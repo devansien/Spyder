@@ -70,7 +70,7 @@ namespace Spyder
             korWriter.Close();
         }
 
-        async static Task MakeOpenNmtDataset()
+        public async static Task MakeOpenNmtDataset()
         {
             int maxTrainLineNum = 10000;
             int maxValLineNum = 1000;
@@ -89,7 +89,7 @@ namespace Spyder
             StreamWriter engTestWriter = File.AppendText("src-test.txt");
             StreamWriter korTestWriter = File.AppendText("tgt-test.txt");
 
-            for (int i = 0; i < maxTrainLineNum; i++)
+            for (int i = 0; i < textLines.Length; i++)
             {
                 string[] textLine = textLines[i].Split('\t');
 
